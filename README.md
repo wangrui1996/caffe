@@ -141,3 +141,75 @@ We have provided the latest models that are trained from different datasets. To 
    * trainval1: [SSD300*](https://drive.google.com/open?id=0BzKzrI_SkD1_a2NKQ2d1d043VXM), [SSD500](https://drive.google.com/open?id=0BzKzrI_SkD1_X2ZCLVgwLTgzaTQ)
 
 <sup>[1]</sup>We use [`examples/convert_model.ipynb`](https://github.com/weiliu89/caffe/blob/ssd/examples/convert_model.ipynb) to extract a VOC model from a pretrained COCO model.
+
+
+### 利用SSD网络训练自己的数据集
+为了简化训练，通过人员目标检测为例子进行演示
+
+1. 数据集准备:
+    * 首先制作样本，样本通过labelImg工具制作
+    * 样本制作完成后，将访问图片的文件夹改名Images，将放置xml图片改名Annotations,并执行以下脚本，生成目录如下:
+   ```Shell
+     # 修改xml路径并执行以下脚本 
+     python3 ./data/hopo/get_split_data_betwwen_train_and_test.py
+   ```
+   |-- data
+         |-- people
+                |-- trainval.txt       # 训练数据集样本标签
+                |-- test.txt           # 测试数据集样本标签
+                |-- Images             # 图片目录
+                |      |-- 00000.jpg   
+                |      |-- 00001.jpg
+                |      |-- 00002.jpg
+                |      |-- ...
+                |    
+                |-- Annotations        # 标签目录
+                       |-- 00000.xml
+                       |-- 00001.xml
+                       |-- 00002.xml
+                       |-- ...
+    
+    * 执行以下脚本进行训练
+    '''Shell
+    python examples/hopo/train_people.py
+    '''
+    
+    
+### 分类训练
+为了简化分类训练，不需要自己去设计脚本生成数据中间文件直接进行训练
+
+1. 数据准备
+
+    * 首先收集需要分类的图片，并对需要分类的图片进行分类，不同类图片放入不同文件夹下
+    文件解构如下
+    |-- data
+          |-- hopo
+                |-- people_attribe
+                          |-- driver
+                          |      |-- 00001.jpg
+                          |      |-- ...
+                          |
+                          |-- staff      
+                          |     |-- 00001.jpg
+                          |     |-- ...
+                          |
+                          |-- others
+                                |-- 00001.jpg
+                                |-- ...
+                          
+    * 执行以下命令
+    
+    '''Shell
+    python data/people_attribe/create_people_attribe.py
+    '''
+    
+2. 开始训练
+
+    * 执行以下命令进行训练
+    '''Shell
+    python examples/hopo/train_people_attr.py
+    '''
+    
+### 对单个图片或视频进行测试
+
+    * 链接相应的C++库即可测试，可以直接使用caffe生成的可执行文件进行测试
